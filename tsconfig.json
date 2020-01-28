@@ -1,0 +1,32 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "target": "es6",
+        "lib": [
+            "es2017",
+            "dom"
+        ],
+        "module": "commonjs",
+        "sourceMap": true,
+        "declaration": false,
+        "strict": true,
+		"allowJs": true,
+        "downlevelIteration": true,
+        "noImplicitReturns": true,
+        "jsx": "react",
+        "jsxFactory": "h",
+        "types": [
+            "node",
+            "three",
+            "tween.js",
+            "preact",
+            "long"
+        ]
+    },
+    "exclude": [
+      "node_modules",
+      "dist",
+      "release-notes",
+      "resources"
+    ]
+}

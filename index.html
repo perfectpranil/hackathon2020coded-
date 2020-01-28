@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Map View Example</title>
+    <link href="resources/style.css" rel="stylesheet" media="all">
+    <link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.1/mapsjs-ui.css" />
+
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-core.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-core-legacy.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-service.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-service-legacy.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-ui.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
+    <script src="./three.min.js"></script>
+    <script src="./vendors-bundle.js"></script>
+    <script src="./visualization-library-bundle.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/104/three.js" charset="utf-8"></script>
+    <script src="https://unpkg.com/@here/harp.gl@0.10.0/dist/harp.js" charset="utf-8"></script>
+    <script src="https://unpkg.com/@here/harp-leaflet@0.1.1/build/harp-leaflet.js" charset="utf-8"></script>
+    <script src="https://unpkg.com/@here/olp-sdk-authentication@0.9.0/dist/bundle/olp-sdk-authentification.0.9.0.dev.js" charset="utf-8"></script>
+<script src="https://unpkg.com/@here/olp-sdk-dataservice-read@0.9.0/dist/bundle/olp-sdk-dataservice-read.0.9.0.dev.js" charset="utf-8"></script>
+<script src="https://unpkg.com/jszip@3.2.2/dist/jszip.js" charset="utf-8"></script>
+<script src="//cdn.rawgit.com/dcodeIO/protobuf.js/6.8.4/dist/protobuf.min.js"></script>
+
+    <style></style>
+
+</head>
+
+<body>
+    <script src="dist/three/three.min.js"></script>
+    <script>
+       var platform = new H.service.Platform({
+    "apikey" : '_Zr0BwUMgStqJ47l6VTVrclSXP09wnpnZmg1jW1HGN0'
+  });
+  
+  var defaultLayers = platform.createDefaultLayers();
+  
+  function request_route()
+  {
+     var serviceCfg = {
+      baseUrl: new H.service.Url("https", "cre.api.here.com", "2", {
+          app_id: "CiR859QY1rG75CCcjV1M",
+          app_code: "o7ycTwt5Oe38EnESLL6XAg"
+        }
+    )};
+    var router = platform.getCustomRoutingService(serviceCfg),
+      routeRequestParams = {
+          overlays: 'OVERLAYVINIDEX1',
+        mode: 'fastest;truck;traffic:disabled',
+        //representation: 'display',
+        //routeattributes : 'waypoints,summary,shape,legs',
+        legAttributes: 'sh',
+        //maneuverattributes: 'direction,action',
+        waypoint0: '-37.76503,144.815788', 
+        waypoint1: '-37.763949,144.817274'
+      };
+  
+  
+    router.calculateRoute(
+      routeRequestParams,
+      onSuccess,
+      onError
+    );
+  }
+  /**
+   * This function will be called once the Routing REST API provides a response
+   * @param  {Object} result          A JSONP object representing the calculated route
+   *
+   * see: http://developer.here.com/rest-apis/documentation/routing/topics/resource-type-calculate-route.html
+   */
+  function onSuccess(result) {
+    var route = result.response.route[0];
+   /*
+    * The styling of the route response on the map is entirely under the developer's control.
+    * A representitive styling can be found the full JS + HTML code of this example
+    * in the functions below:
+    */
+    addRouteShapeToMap(route);
+    // ... etc.
+  }
+  
+  /**
+   * This function will be called if a communication error occurs during the JSON-P request
+   * @param  {Object} error  The error message received.
+   */
+  function onError(error) {
+    alert('Can\'t reach the remote server');
+  }
+  
+  function addRouteShapeToMap(route){
+      var lineString = new H.geo.LineString(),
+        routeShape = route.leg[0].shape,
+        polyline;
+    
+      //routeShape.forEach(function(point, idx) {
+      for(var i=0; i<routeShape.length; i+=2 ){
+        //var parts = point.split(',');
+        lineString.pushLatLngAlt(routeShape[i], routeShape[i+1]);
+      };
+      //console.log("yyy: ", );
+    
+      polyline = new H.map.Polyline(lineString, {
+        style: {
+          lineWidth: 4,
+          strokeColor: 'rgba(0, 128, 255, 0.7)'
+        }
+      });
+      
+    
+      
+      // Add the polyline to the map
+      //map.addObject(polyline);
+      // And zoom to its bounding rectangle
+  
+      geoJsonDataSource.renderGeoJson(polyline); 
+    }
+
+
+    
+    </script>
+
+<script src="./js/three.min.js"></script>
+<script src="./js/vendors-bundle.js"></script>
+<script src="./js/visualization-library-bundle.js"></script>
+
+    <div style="display: ;" id="map-here"></div>
+    
+
+    <script>
+
+
+        /*
+ * Copyright (C) 2019 HERE Global B.V. and its affiliate(s). All rights reserved.
+ *
+ * This software and other materials contain proprietary information controlled by HERE and are
+ * protected by applicable copyright legislation. Any use and utilization of this software and other
+ * materials and disclosure to any third parties is conditional upon having a separate agreement
+ * with HERE for the access, use, utilization or disclosure of this software. In the absence of such
+ * agreement, the use of the software is not allowed.
+ */
+//  Form.addEventListener("onclick", event => {
+//  start(
+//                 "here",
+//                 "AL9LHBmsea1X67xh6mcRCg",
+//                 "TbQKtDCm1LK-0-X_R1sMvmcYmWQ3t4EcgvBXlKDc25CNGHoCAK16KvjHICp7GwRyuO7QymKSzj_dk6_gk_KkEg",
+//                 "hrn:here:data:::here-geojson-samples",
+//                 "country-borders",
+//                 ["1440", "1441", "1444"],
+//                 [49.9, 16.5],
+//                 5,
+//                 "hrn:here:data:::here-optimized-map-for-visualization-2"
+//             ).then(() => {
+//                 document.body.removeChild(document.body.querySelector(".auth-form"));
+//             }).catch(error => {
+//                 status.innerText = "Cannot connect. Please double check your credentials and access.";
+//             });
+//         });
+
+       
+
+async function start(env, accessKeyId, accessKeySecret, hrn, layerName, partitions, latLong, zoom, baseMapHRN) {
+    // Get a function, that will provide a token for an access to HERE data.
+    const token = new UserAuth({
+        env,
+        credentials: {
+            accessKeyId,
+            accessKeySecret
+        }
+    }).getToken();
+    const getToken = () => token;
+
+    // Get layer object, that will fetch GeoJSON data.
+    const context = new DataStoreContext({
+        environment: env,
+        getToken
+    });
+    const catalogClient = new CatalogClient({
+        context,
+        hrn
+    });
+    const layer = await catalogClient.getVolatileOrVersionedLayer(layerName);
+
+    // Create Leaflet map.
+    const map = L.map("map", {
+        renderer: L.canvas()
+    });
+    map.setView(latLong, zoom);
+
+    // Get tile data and add to Leaflet.
+    partitions.forEach(async partition => {
+        
+        const rs = await layer.getTile(quadKeyFromMortonCode(partition));
+        console.log("****************************"+ rs)
+        const data = await rs.json();
+
+        L.geoJSON(data)
+            .bindPopup(layer => layer.feature.properties.tooltip)
+            .addTo(map);
+    });
+
+
+
+    // Add the HERE base map. This can be replaced with the code of your preferred base map.
+    const harpLeaflet = new L.HarpGL({
+        theme: "https://unpkg.com/@here/harp-map-theme@0.10.0/resources/berlin_tilezen_night_reduced.json"
+    }).addTo(map);
+    harpLeaflet.mapView.addDataSource(new harp.OmvDataSource({
+        dataProvider: new HypeDataProvider({
+            getToken,
+            hrn: HRN.fromString(baseMapHRN),
+            catalogHrn: baseMapHRN,
+            layer: "omv-base-v2"
+        }),
+        layerName: "omv-base-v2",
+        getBearerToken: getToken,
+        styleSetName: "tilezen"
+    }));
+
+    // const geoJsonDataSource = new GeoJsonDataSource({
+    //     dataStore: {
+    //     hrn: HRN.fromString("hrn:here:data::olp-here-hack2020:catalogtest1"),
+    //     layer: "geojson",
+    //     getBearerToken: () => Promise.resolve(token)
+    //     }
+    // });
+    // mapView.addDataSource(geoJsonDataSource);
+
+}
+
+    </script>
+
+    <div style="display:none" align="center"><input class="btn btn-default btn-sm" type="button" value="Route"  onclick="start('here','AL9LHBmsea1X67xh6mcRCg',
+        'TbQKtDCm1LK-0-X_R1sMvmcYmWQ3t4EcgvBXlKDc25CNGHoCAK16KvjHICp7GwRyuO7QymKSzj_dk6_gk_KkEg',
+        'hrn:here:data::olp-here-hack2020:catalogtest1',
+        'geojson',
+        ['23618173'],
+        [-37.764738, 144.815883],
+        5,
+        'hrn:here:data:::here-optimized-map-for-visualization-2');"/></div>
+
+<div style="height: 550px;display:none" id="map"></div>
+    <script src="dist/common_chunks.bundle.js"></script>
+    <script src="dist/mapview.bundle.js"></script>
+</body>
+
+</html>
